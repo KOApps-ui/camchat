@@ -1404,6 +1404,42 @@
                 border-bottom: 3px solid var(--primary-color);
             }
         }
+        @media screen and (max-width: 768px) {
+            #control-bar {
+                padding: 10px 1rem;
+                gap: 0.5rem;
+                overflow-x: auto;
+                justify-content: flex-start;
+                -ms-overflow-style: none; /* IE and Edge */
+                scrollbar-width: none;  /* Firefox */
+            }
+            #control-bar::-webkit-scrollbar {
+                display: none; /* Chrome, Safari and Opera */
+            }
+            .control-button {
+                min-width: 52px;
+                width: 52px;
+                height: 52px;
+                padding: 12px;
+                flex-shrink: 0;
+            }
+            .control-button .material-symbols-rounded {
+                font-size: 24px;
+            }
+            
+            /* Mobilde gereksiz butonları gizle */
+            #share-button,
+            #ring-light-button,
+            #frame-light-button,
+            #toggle-fullscreen-button {
+                display: none !important;
+            }
+
+            /* Mobilde yatay videoyu yanları kırparak dikeye tam oturtur (TikTok/Reels tarzı) */
+            .video-box video, .gallery-item video {
+                object-fit: cover !important;
+            }
+        }
     </style>
 </head>
 
