@@ -2554,7 +2554,12 @@
             broadcastData({ type: 'cam_status', enabled: isCamOn });
         };
         $('#share-button').onclick = toggleScreenShare;
-        $('#hangup-button').onclick = () => { if (peer) peer.destroy(); window.location.reload(); };
+        $('#hangup-button').onclick = () => { 
+            if (peer) peer.destroy(); 
+            if (localStream) localStream.getTracks().forEach(t => t.stop());
+            if (document.fullscreenElement) document.exitFullscreen?.().catch(()=>{});
+            window.location.href = window.location.pathname; 
+        };
         // PiP Sürükleme Mantığı (Mobil için Dokunmatik)
         const makeDraggableTarget = (el) => {
             let startX, startY, initX, initY, isDragging = false;
