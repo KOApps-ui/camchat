@@ -1420,14 +1420,14 @@
                 display: none; /* Chrome, Safari and Opera */
             }
             .control-button {
-                min-width: 52px;
-                width: 52px;
-                height: 52px;
-                padding: 12px;
+                min-width: 44px;
+                width: 44px;
+                height: 44px;
+                padding: 10px;
                 flex-shrink: 0;
             }
             .control-button .material-symbols-rounded {
-                font-size: 24px;
+                font-size: 20px;
             }
             
             /* Mobilde gereksiz butonları gizle */
@@ -1786,7 +1786,12 @@
                 monitorAudioLevel(localStream, 'local'); startCallTimer();
             }
         }
-        $('#join-button').onclick = () => performJoin(false);
+        $('#join-button').onclick = async () => {
+            if (window.innerWidth <= 768 && !document.fullscreenElement) {
+                try { await document.documentElement.requestFullscreen(); } catch (e) {}
+            }
+            performJoin(false);
+        };
 
 
 
