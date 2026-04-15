@@ -64,6 +64,10 @@
         body {
             margin: 0;
             padding: 0;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            width: 100%;
+            height: 100%;
             font-family: var(--font-family);
             background: var(--bg-primary);
             background-image: radial-gradient(circle at 20% 50%, rgba(124, 58, 237, 0.15) 0%, transparent 50%),
@@ -71,7 +75,6 @@
                 linear-gradient(135deg, #0F172A 0%, #1E293B 50%, #0F172A 100%);
             color: var(--text-primary);
             overflow: hidden;
-            height: 100vh;
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
         }
@@ -1428,10 +1431,29 @@
             }
             
             /* Mobilde gereksiz butonları gizle */
-            #share-button,
             #ring-light-button,
             #frame-light-button,
+            #settings-button,
             #toggle-fullscreen-button {
+                display: none !important;
+            }
+
+            /* Mobilde kisinin videousu galeri kapaninca uste gelsin v yuzuk olsun */
+            .floating-mobile {
+                position: fixed !important;
+                top: 20px !important;
+                right: 20px !important;
+                width: 120px !important;
+                height: 120px !important;
+                border-radius: 50% !important;
+                z-index: 9999 !important;
+                box-shadow: 0 8px 32px rgba(0,0,0,0.6) !important;
+                overflow: hidden !important;
+                border: 3px solid var(--primary-light) !important;
+                margin: 0 !important;
+                touch-action: none;
+            }
+            .floating-mobile .info-strip {
                 display: none !important;
             }
 
@@ -2523,7 +2545,57 @@
         };
         $('#share-button').onclick = toggleScreenShare;
         $('#hangup-button').onclick = () => { if (peer) peer.destroy(); window.location.reload(); };
-        $('#toggle-gallery-button').onclick = () => $('#participant-gallery').classList.toggle('hidden');
+        // PiP Sürükleme Mantığı (Mobil için Dokunmatik)
+        const makeDraggableTarget = (el) => {
+            let startX, startY, initX, initY, isDragging = false;
+            const down = e => {
+                if(e.type === 'touchstart') e = e.touches[0];
+                isDragging = true;
+                startX = e.clientX; startY = e.clientY;
+                const rect = el.getBoundingClientRect();
+                initX = rect.left; initY = rect.top;
+                document.addEventListener('mousemove', move, {passive: false});
+                document.addEventListener('mouseup', up);
+                document.addEventListener('touchmove', move, {passive: false});
+                document.addEventListener('touchend', up);
+            };
+            const move = e => {
+                if(!isDragging) return;
+                let clientX = e.clientX, clientY = e.clientY;
+                if(e.type === 'touchmove') { clientX = e.touches[0].clientX; clientY = e.touches[0].clientY; }
+                e.preventDefault();
+                el.style.left = (initX + (clientX - startX)) + 'px';
+                el.style.top = (initY + (clientY - startY)) + 'px';
+                el.style.right = 'auto'; el.style.bottom = 'auto';
+            };
+            const up = () => {
+                isDragging = false;
+                document.removeEventListener('mousemove', move); document.removeEventListener('mouseup', up);
+                document.removeEventListener('touchmove', move); document.removeEventListener('touchend', up);
+            };
+            el.addEventListener('mousedown', down); el.addEventListener('touchstart', down, {passive: false});
+        };
+
+        $('#toggle-gallery-button').onclick = () => {
+            const isHidden = $('#participant-gallery').classList.toggle('hidden');
+            if (window.innerWidth <= 768) {
+                const localItem = document.getElementById('gallery-item-local');
+                if (localItem) {
+                    if (isHidden) {
+                        localItem.classList.add('floating-mobile');
+                        document.body.appendChild(localItem); // body'ye taşı ki gizli galeriden çıksın
+                        if(!localItem.dataset.dragAttached) {
+                            makeDraggableTarget(localItem);
+                            localItem.dataset.dragAttached = "true";
+                        }
+                    } else {
+                        localItem.classList.remove('floating-mobile');
+                        document.getElementById('gallery-list').prepend(localItem);
+                        localItem.style = ''; // pozisyonu sıfırla
+                    }
+                }
+            }
+        };
         $('#toggle-fullscreen-button').onclick = () => { if (!document.fullscreenElement) $('#call-wrapper').requestFullscreen(); else document.exitFullscreen(); };
         $('#toggle-chat-button').onclick = () => $('#chat-panel').classList.toggle('hidden');
         $('#settings-button').onclick = () => {
