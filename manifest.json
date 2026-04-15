@@ -1,6 +1,6 @@
 {
-  "name": "Vidi Video Chat",
-  "short_name": "Vidi",
+  "name": "KO|Apps VC",
+  "short_name": "KOVC",
   "description": "Modern ve kaliteli görüntülü sohbet uygulaması.",
   "start_url": "index.html",
   "display": "standalone",
@@ -8,7 +8,7 @@
   "theme_color": "#7C3AED",
   "icons": [
     {
-      "src": "icon-512.png",
+      "src": "icon-ko-512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
